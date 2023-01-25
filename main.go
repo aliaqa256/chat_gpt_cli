@@ -18,30 +18,34 @@ func main() {
 		panic("Missing API KEY")
 	}
 
-
-
 	ctx := context.Background()
 	client := gpt3.NewClient(apiKey)
 
-	// get user prompt all in one line
-	fmt.Println("Enter your prompt:")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	prompt := scanner.Text()
+aa:
+	for {
+		fmt.Println("Enter your prompt:(q if you want to exit!!!)")
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		prompt := scanner.Text()
+		if prompt == "q" {
+			break aa
+		}
 
-
-	err := client.CompletionStreamWithEngine(ctx, gpt3.TextDavinci003Engine, gpt3.CompletionRequest{
-		Prompt: []string{
-			prompt,
-		},
-		MaxTokens:   gpt3.IntPtr(100),
-		Temperature: gpt3.Float32Ptr(0),
-	}, func(resp *gpt3.CompletionResponse) {
-		fmt.Print(resp.Choices[0].Text)
-	})
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(13)
+		err := client.CompletionStreamWithEngine(ctx, gpt3.TextDavinci003Engine, gpt3.CompletionRequest{
+			Prompt: []string{
+				prompt,
+			},
+			MaxTokens:   gpt3.IntPtr(1000),
+			Temperature: gpt3.Float32Ptr(0),
+		}, func(resp *gpt3.CompletionResponse) {
+			fmt.Print(resp.Choices[0].Text)
+		})
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(13)
+		}
+		fmt.Printf("\n")
 	}
-	fmt.Printf("\n")
+
 }
+//env GOOS=windows GOARCH=amd64 go build .
